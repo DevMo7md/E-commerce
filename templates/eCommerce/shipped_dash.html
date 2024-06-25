@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<header class="bg-dark py-1">
+    <div class="container px-4 px-lg-5 my-0">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder" style="color: aliceblue;">Shipped orders</h1>
+            <p class="lead fw-normal text-white-50 mb-0">shipped dashboard</p>
+        </div>
+    </div>
+</header>
+<style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .pagination .step-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .pagination .step-links a,
+        .pagination .step-links span {
+            display: inline-block;
+            text-align: center;
+            height: 30px;
+            width: 100px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+        }
+        .pagination .step-links .current {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            
+        }
+        .pagination .step-links a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+<div class="justify-content-center main-content" style="padding: 30px;">
+    <table class="table table-striped table-hover main-content">
+        <thead class="table-dark">
+            <tr>
+            <th scope="col">Order ID</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Customer Phone</th>
+            <th scope="col">Email</th>
+            <th scope="col">Price</th>
+            <th scope="col">Date shipped</th>
+            <th scope="col">Shipped</th>
+            <th scope="col">PDF</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in orders %}
+            <tr>            
+<td>            <a href="{% url 'order' item.id %}" style="color: brown;">{{item.id}}</a></td>
+            <td>{{item.full_name}}</td>
+            <td>{{item.phone}}</td>
+            <td>{{item.email}}</td>
+            <td>${{item.amount_paid}}</td>
+            <td>{{item.date_shipped}}</td>
+            <td>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="shipped_status" value="false">
+                    <input type="hidden" name="num" value="{{item.id}}">
+                    <button class="btn btn-sm btn-danger" type="submit">Mark as not shipped</button>
+                </form>
+            </td>
+            <td>
+                <a href="{% url 'generate_pdf' item.id %}" class="btn btn-sm btn-warning">Make pdf</a>
+            </td>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+    <span class="step-links">
+        {% if orders.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ orders.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ orders.number }} of {{ orders.paginator.num_pages }}.
+        </span>
+
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}">next</a>
+            <a href="?page={{ orders.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
+</div>
+{% endblock %}

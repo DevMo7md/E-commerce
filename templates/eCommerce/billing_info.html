@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a href="{% url 'checkout' %}" class="btn btn-outline-danger">&#x2190; Back to checkout page</a>
+            <hr>
+            <h3>Order Summary</h3>
+            <hr>
+            {% for prod in cart_products %}
+            <div class="cart-row">
+                {% if prod.image %}
+                <div style="flex:2"><img class="row-image" src="{{prod.image.url}}"></div>
+                {% else %}
+                <div style="flex:2"><img class="row-image" src="{% static 'images/empty.jpg' %}"></div>
+                {% endif %}
+                {% if prod.is_sale %}
+                <div style="flex:2"><p>{{prod.name}}</p></div>
+                <div style="flex:1"><p>$<strike>{{prod.price}}</strike> &nbsp; ${{prod.sale_price}} </p></div>
+                <div style="flex:1"><p>&nbsp; x {% for keys, value in quantities.items %} 
+                    {% if keys == prod.id|slugify %}
+                        {{value}}
+                    {% endif %}    
+                    {% endfor %}</p></div>
+            </div>
+                {% else %}
+                <div style="flex:2"><p>{{prod.name}}</p></div>
+                <div style="flex:1"><p>${{prod.price}}</p></div>
+                <div style="flex:1"><p>x {% for keys, value in quantities.items %} 
+                    {% if keys == prod.id|slugify %}
+                        {{value}}
+                    {% endif %}    
+                    {% endfor %}</p></div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            <h5>Items:  {{total_items}} </h5>
+            <h5>Total:  ${{total}} </h5>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element" id="form-wrapper">
+            <form method="POST" action="{% url 'process_order' %}">
+                {% csrf_token %}
+                <hr>
+                <h4>Card informations</h4>
+                <hr>
+                    {{billing_form.as_p}}
+                <br>
+                
+                <br><br>
+                <button class="btn btn-success" type="submit">
+                    Pay now
+                </button>
+            </form>
+        </div>
+        <br>
+        <div class="box-element" id="form-wrapper">
+            <hr>
+            <h4>Shipping informations</h4>
+            <hr>
+            <strong>Name</strong> : {{shipping_info.shipping_full_name}}<br><hr>
+            <strong>Email</strong> : {{shipping_info.shipping_email}}<br><hr>
+            <strong>Address</strong> : {{shipping_info.shipping_address1}}<br><hr>
+            {% if shipping_info.addresse2 %}
+            <strong>Address 2</strong> : {{shipping_info.shipping_addresse2}}<br><hr>
+            {% endif %}
+            <strong>Country</strong> : {{shipping_info.shipping_country}}<br><hr>
+            <strong>City</strong> : {{shipping_info.shipping_city}}<br><hr>
+            <strong>State</strong> : {{shipping_info.shipping_state}}<br><hr>
+            <br><br>
+        </div>
+        <br>
+        
+    </div>
+
+</div>
+{% endblock %}

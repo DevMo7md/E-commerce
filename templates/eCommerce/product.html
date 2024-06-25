@@ -1,0 +1,191 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="row">
+  {% if product.is_sale %}
+  <div class="col-lg-12">
+    <div class="box-element" id="form-wrapper">
+      <a
+        href="{% url 'main' %}"
+        class="btn btn-outline-danger"
+        style="margin-bottom: 10px"
+        >&#x2190; Continue Shopping</a
+      >
+      <h5>
+        <div class="badge bg-dark text-white position-absolute">Sale !</div>
+      </h5>
+      {% if product.image %}
+      <img
+        src="{{product.image.url}}"
+        class="img-fluid rounded-start"
+        alt="..."
+        style="max-width: 300px; max-height: 350px"
+      />
+      {% else %}
+      <img
+        src="{% static 'images/empty.jpg' %}"
+        class="img-fluid rounded-start"
+        alt="..."
+        style="max-width: 300px; max-height: 350px"
+      />
+      {% endif %}
+      <br />
+      <div class="col-md-12">
+        <div class="card-body"><br>
+          <h5 class="card-title">{{product.name}}</h5>
+          <p class="card-text">{{product.description}}</p>
+          <hr />
+          <div class="row">
+            <div class="col-md-2">Quantity:</div>
+            <div class="col-md-2">
+              <select class="form-select cart-qty">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <br /><br /><br />
+            <div>
+
+              <button
+                class="btn btn-outline-dark update-cart"
+                type="button"
+                data-product-id="{{product.id}}"
+              >
+              <img
+                src="{% static 'images/cart2.png' %}"
+                alt="Cart Icon"
+                class="cart-icon"
+              />
+              <i class="bi-cart-fill me-1"></i>
+                Add to cart
+              </button>
+              <h5 id="price">&nbsp;
+                ${{product.sale_price}} &nbsp;&nbsp;<strike>${{product.price}}</strike>
+              </h5>
+              <small class="text-body-secondary"></small>
+              <hr />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-lg-12">
+      <div class="box-element" id="form-wrapper">
+        <a
+          href="{% url 'main' %}"
+          class="btn btn-outline-danger"
+          style="margin-bottom: 10px"
+          >&#x2190; Continue Shopping</a
+        >
+        <h5>
+          <div
+            class="badge bg-dark text-white position-absolute"
+            style="display: none"
+          >
+            <!-- علشان احافظ ع مكان الزرار اللي فوق اكن موجود بادج السيل -->
+          </div>
+        </h5>
+        {% if product.image %}
+        <img
+          src="{{product.image.url}}"
+          class="img-fluid rounded-start"
+          alt="..."
+          style="max-width: 300px; max-height: 350px"
+        />
+        {% else %}
+        <img
+          src="{% static 'images/empty.jpg' %}"
+          class="img-fluid rounded-start"
+          alt="..."
+          style="max-width: 300px; max-height: 350px"
+        />
+        {% endif %}
+        <br />
+        <div class="col-md-8"><br>
+          <div class="card-body">
+            <h5 class="card-title">{{product.name}}</h5>
+            <p class="card-text">{{product.description}}</p>
+            <hr />
+            <div class="row">
+              <div class="col-md-2">Quantity:</div>
+              <div class="col-md-2">
+                <select class="form-select cart-qty">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+                <br /><br /><br />
+              </div>
+            </div>
+            <div>
+              
+              <button
+                class="btn btn-outline-dark update-cart"
+                type="button"
+                data-product-id="{{product.id}}"
+              >
+              <img
+                src="{% static 'images/cart2.png' %}"
+                alt="Cart Icon"
+                class="cart-icon"
+              />
+              <i class="bi-cart-fill me-1"></i>
+                Add to cart
+              </button>
+              <h5 id="price">&nbsp;&nbsp;$ {{product.price}}</h5>
+              <small class="text-body-secondary"></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+  $(document).on("click", ".update-cart", function (e) {
+    e.preventDefault();
+    var productID = $(this).data("product-id");
+    var productQty = $(this)
+      .closest(".box-element")
+      .find(".cart-qty option:selected")
+      .val();
+
+    $.ajax({
+      type: "POST",
+      url: "{% url 'cart_add' %}",
+      data: {
+        product_id: productID,
+        product_qty: productQty,
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        action: "post",
+      },
+
+      success: function (json) {
+        document.getElementById("cart-total").textContent = json.quantity;
+        location.reload(); //<---
+      },
+
+      error: function (xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      },
+    });
+  });
+</script>
+
+{% endblock %}

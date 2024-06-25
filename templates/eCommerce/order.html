@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<header class="bg-light py-1">
+    <div class="container px-4 px-lg-5 my-0">
+        <div class="text-center text-white">
+            <h5 class="display-6 fw-bolder" style="color: rgb(0, 0, 0);">Order details</h5>
+            <p class="lead fw-normal text-black-50 mb-0">Order detales, items</p>
+        </div>
+    </div>
+</header>
+<div class="d-flex justify-content-center text-center" style="padding: 10px;">
+    <div class="card h-100 w-50 mb-3 justify-content-center" style="box-shadow:hsl(0, 0%, 89%) 0 0 16px;">
+        <div class="card-header">
+            Order {{ orders.id }} - ${{ orders.amount_paid }}
+        </div>
+        <div class="card-body">
+            <strong>Email: </strong>{{ orders.email }}<br>
+            {% if orders.date_shipped %}
+            <strong>Date Shipped: </strong>{{ orders.date_shipped }}<br>
+            {% else %}
+            <strong>Date Ordered:</strong> {{ orders.date_ordered }}<br>
+            {% endif %}
+            <strong>{{ orders.full_name }}</strong><br><hr>
+            <h5>-Address-</h5><hr>
+            <strong><pre>{{ orders.shipping_address }}</pre></strong><hr>
+            
+            <h5>Items</h5><hr>
+            {% for item in order_items %}
+            {{ item.product }} - x{{ item.quantity }} - ${{ item.price }}<br>
+            {% endfor %}<hr>
+
+            {% if orders.shipped %}
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="shipped_status" value="false">
+                <button class="btn btn-danger" type="submit">Mark as not shipped</button>
+            </form>
+
+            {% else %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="shipped_status" value="true">
+                <button class="btn btn-success" type="submit">Mark as shipped</button>
+            </form>
+            
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a href="{% url 'cart_summary' %}" class="btn btn-outline-danger">&#x2190; Back to cart</a>
+            <hr>
+            <h3>Order Summary</h3>
+            <hr>
+            {% for prod in cart_products %}
+            <div class="cart-row">
+                {% if prod.image %}
+                <div style="flex:2"><img class="row-image" src="{{prod.image.url}}"></div>
+                {% else %}
+                <div style="flex:2"><img class="row-image" src="{% static 'images/empty.jpg' %}"></div>
+                {% endif %}
+                {% if prod.is_sale %}
+                <div style="flex:2"><p>{{prod.name}}</p></div>
+                <div style="flex:1"><p>$<strike>{{prod.price}}</strike> &nbsp; ${{prod.sale_price}} </p></div>
+                <div style="flex:1"><p>&nbsp; x {% for keys, value in quantities.items %} 
+                    {% if keys == prod.id|slugify %}
+                        {{value}}
+                    {% endif %}    
+                    {% endfor %}</p></div>
+            </div>
+                {% else %}
+                <div style="flex:2"><p>{{prod.name}}</p></div>
+                <div style="flex:1"><p>${{prod.price}}</p></div>
+                <div style="flex:1"><p>x {% for keys, value in quantities.items %} 
+                    {% if keys == prod.id|slugify %}
+                        {{value}}
+                    {% endif %}    
+                    {% endfor %}</p></div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            <h5>Items:  {{total_items}} </h5>
+            <h5>Total:  ${{total}} </h5>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element" id="form-wrapper">
+            {% csrf_token %}
+            <form method="POST" action="{% url 'billing_info' %}">
+            {% csrf_token %}
+            <hr>
+            <h4>Shipping informations</h4>
+            <hr>
+            {{shipping_form.as_p}}
+            <br>
+            
+            <button class="btn btn-success" type="submit">
+                Continue to Billing
+            </button>
+            <br><br>
+            </form>
+        </div>
+        <br>
+        
+    </div>
+
+</div>
+{% endblock %}

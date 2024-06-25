@@ -1,0 +1,49 @@
+<!-- order_confirmation_email.html -->
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تأكيد الطلب</title>
+</head>
+<body dir="rtl">
+    <h2>تأكيد الطلب</h2>
+    
+    <p>عزيزي/عزيزتي {{ order.full_name }},</p>
+    
+    <p>شكراً لطلبك. سنقوم بإعلامك بمجرد شحن العناصر الخاصة بك. تاريخ التسليم المتوقع هو {{ delivery_date }}.</p>
+    
+    <h3>تفاصيل الطلب</h3>
+    
+    <p><strong>رقم الطلب:</strong> {{ order.id }}</p>
+    <p><strong>تاريخ الطلب:</strong> {{ order.date_ordered | date:"F d, Y" }}</p>
+    
+    <h4>ملخص الطلب</h4>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">المنتج</th>
+                <th scope="col">الكمية</th>
+                <th scope="col">السعر</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.order_items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p><strong>الإجمالي:</strong> ${{ order.amount_paid }}</p>
+    <p><strong>إجمالي العناصر:</strong> x {{ order.quantity }}</p>
+    
+    <p>إذا كان لديك أي أسئلة أو استفسارات، يرجى الاتصال بنا على <a href="mailto:{{ settings.DEFAULT_FROM_EMAIL }}">{{ settings.DEFAULT_FROM_EMAIL }}</a>.</p>
+    
+    <p>شكراً لتسوقك معنا!</p>
+</body>
+</html>

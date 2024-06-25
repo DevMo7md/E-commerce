@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    
+<div class="row">
+    {% if product.is_sale %}
+    <div class="col-lg-8 " >
+        <h5><div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right:0.5rem;">
+            Sale !
+        </div></h5>
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% if product.image %}
+            <img src="{{product.image.url}}" class="img-fluid rounded-start" alt="...">
+            {% else %}
+            <img src="{% static 'images/empty.jpg' %}" class="img-fluid rounded-start" alt="...">
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{product.name}}</h5>
+                <p class="card-text">{{product.description}}</p>
+                <hr>
+                <br><br><br><br><br><br><br><br><br>
+                <div>
+                    <a href="#" class="btn btn-outline-success">Buy</a>
+                    <button class="btn btn-outline-dark update-cart">Add to cart</button>
+                    <h5 id="price">$ {{product.sale_price}} <strike>$ {{product.price}}</strike></h5>
+                    <small class="text-body-secondary"></small>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+    <div class="card mb-3 col-lg-8" style="width: 1000px;">
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% if product.image %}
+            <img src="{{product.image.url}}" class="img-fluid rounded-start" alt="...">
+            {% else %}
+            <img src="{% static 'images/empty.jpg' %}" class="img-fluid rounded-start" alt="...">
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+                <div class="card-body">
+                <h5 class="card-title">{{product.name}}</h5>
+                <p class="card-text">{{product.description}}</p>
+                <hr>
+                <br><br><br><br><br><br>
+                    <div>
+                        <a href="#" class="btn btn-outline-success">Buy</a>
+                        <button class="btn btn-outline-dark update-cart">Add to cart</button>
+                        <h5 id="price">$ {{product.price}}</h5>
+                        <small class="text-body-secondary"></small>
+                    </div>
+                </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="col-lg-4 card" style="margin-left: 20px;">
+        
+      </div>
+</div>  
+{% endblock %}
