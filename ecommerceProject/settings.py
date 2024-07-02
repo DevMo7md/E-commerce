@@ -31,10 +31,12 @@ SECRET_KEY = 'django-insecure-3h&zjyml6idb77k2!3so!o^_(@03+7i)gz2&btv%nf66*ifu82
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
+
+SITE_ID = 2
 
 INSTALLED_APPS = [
 
@@ -50,8 +52,37 @@ INSTALLED_APPS = [
     'cart',
     'payment',
     'whitenoise.runserver_nostatic',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook', # google can changed to facebook or github and another ways 
+    'social_django',
     
 ]
+
+SOCIALACCOUNTS_PROVIDERS = {
+    "facebook":{
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS":{"access_type":"online"}
+    }
+}
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",  # new
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '64684357555-78c7bler3c18tktanv1cg4mprg9ummr7.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://localhost:8000/oauth/complete/google-oauth2/'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    "allauth.account.middleware.AccountMiddleware",  # new
 ]
 
 ROOT_URLCONF = 'ecommerceProject.urls'
@@ -78,10 +110,15 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart',
+                'social_django.context_processors.backends',  # Add this
+                'social_django.context_processors.login_redirect',  # And this
             ],
         },
     },
 ]
+
+LOGIN_REDIRECT_URL = "update_profile"
+LOGOUT_REDIRECT_URL = "/"
 
 WSGI_APPLICATION = 'ecommerceProject.wsgi.application'
 
@@ -161,3 +198,7 @@ PDFKIT_CONFIG = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+

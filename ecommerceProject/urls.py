@@ -24,6 +24,9 @@ urlpatterns = [
     path('', include('ecommerceApp.urls')),
     path('cart/', include('cart.urls')),
     path('payment/', include('payment.urls')),
+    path("accounts/", include('allauth.urls')),
+    path('oauth/', include('social_django.urls', namespace='social')),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

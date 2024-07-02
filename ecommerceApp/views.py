@@ -12,6 +12,9 @@ from payment.forms import ShippingAddressForm
 from payment.models import ShippingAddress
 from django.db.models import Q
 import json
+from social_django.models import UserSocialAuth
+from social_django.utils import psa
+from social_core.exceptions import AuthAlreadyAssociated
 
 # Create your views here.
 
@@ -50,8 +53,10 @@ def products(request, pk):
     categories = Category.objects.all()  # Get all categories
     cart = Cart(request)  # Get the current cart
     total_items = cart.total_items()  # Get total items in the cart
+    related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]  # Limit to 4 related products
     context = {
         'product': product,
+        'related_products':related_products,
         'categories': categories,
         'total_items': total_items,
     }
@@ -160,8 +165,7 @@ def register_user(request):
         if password1 == password2:
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'Username already exists')
-            elif User.objects.filter(email=email).exists():
-                messages.error(request, 'Email already exists')
+            
             else:
                 user = User.objects.create_user(username=username, email=email, password=password1, first_name=first_name)
                 user.save()
@@ -178,7 +182,7 @@ def login_user(request):
     if request.method == 'POST':
         username = request.POST['usernamee']
         password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=password,)
         if user is not None:
             login(request, user)
             #get the current user
@@ -220,6 +224,7 @@ def update_profile(request):
 
 
     if request.user.is_authenticated:
+        messages.success(request, 'ملئ البيانات التاليه')
         # Get the current user
         current_user = Profile.objects.get(user__id=request.user.id)
         # Get the current user's shipping information
@@ -243,3 +248,7 @@ def update_profile(request):
     else:
         messages.error(request, "Sorry, This action needs user logged in !")
         return redirect('main')
+
+
+
+
